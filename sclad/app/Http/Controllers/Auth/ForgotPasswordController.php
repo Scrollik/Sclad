@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\App;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Illuminate;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
+
+class ForgotPasswordController extends Controller
+{
+    public  function create()
+    {
+        return view('forgot_password');
+    }
+
+    public function store(Request $request)
+    {
+        //validation
+        $credentials = $request -> validate([
+            'email'=> ['required','string','email'],
+        ]);
+
+        $status = Password::sendResetLink(
+          $request->only('email')
+        );
+        if ($status === Password::RESET_LINK_SENT)
+        {
+            return back()->with('status',trans($status));
+        }
+        return back()->withInput($request ->only('email'))
+            ->withErrors(['email'=> trans($status)]);
+
+
+
+    }
+
+
+}
